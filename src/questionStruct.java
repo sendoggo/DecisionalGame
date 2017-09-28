@@ -13,4 +13,13 @@ public class questionStruct {
     private String question;
     private int popularity;
     private int earnings;
+
+    public questionStruct(int id, String question, int popularity, int earnings) {
+        this.id = id;
+        this.question = question;
+        this.popularity = popularity;
+        this.earnings = earnings;
+    }
+    
+    
 }

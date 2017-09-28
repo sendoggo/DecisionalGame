@@ -18,7 +18,7 @@ public class UI extends javax.swing.JFrame implements ActionListener{
      * Creates new form UI
      */
     
-    struct 
+     
     public UI() {
         initComponents();
         jProgressBar1.setValue(50);
