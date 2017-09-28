@@ -12,5 +12,5 @@ public class questionStruct {
     private int id;
     private String question;
     private int popularity;
-    private int earin
+    private int earnings;
 }
