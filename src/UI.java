@@ -1,6 +1,7 @@
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -12,40 +13,26 @@ import java.awt.event.ActionListener;
  *
  * @author Francesco
  */
-public class UI extends javax.swing.JFrame implements ActionListener{
+public class UI extends javax.swing.JFrame{
 
     /**
      * Creates new form UI
      */
     
-     
+    private static QuestionStruct test[];
+    private static int index = 0;
+    
+    
     public UI() {
         initComponents();
-        jProgressBar1.setValue(50);
-        jProgressBar2.setValue(50);
-        jTextField1.setText("A fire started in the printing room: panic?");
-        
+        jPanel1.setEnabled(false);
+        popPB.setValue(50);
+        earnPB.setValue(50);
+        questionTF.setText(test[0].getQuestion());
+        answer1.setText(test[0].getAnswer1());
+        answer2.setText(test[0].getAnswer2());
     }
     
-    
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        
-        if(e.getSource() == this.jButton1){
-            jProgressBar1.setValue(jProgressBar1.getValue()+10);
-            jProgressBar2.setValue(jProgressBar2.getValue()-10);
-        }
-        else{
-            jProgressBar1.setValue(jProgressBar1.getValue()-10);
-            jProgressBar2.setValue(jProgressBar2.getValue()+10);
-        }
-        
-    } 
-    
-    
-    public void mechanics(){
-        
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -56,40 +43,40 @@ public class UI extends javax.swing.JFrame implements ActionListener{
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        answer1 = new javax.swing.JButton();
+        answer2 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
-        jProgressBar2 = new javax.swing.JProgressBar();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        earnPB = new javax.swing.JProgressBar();
+        popPB = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        questionTF = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setBackground(new java.awt.Color(51, 255, 51));
-        jButton1.setText("Yes");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        answer1.setBackground(new java.awt.Color(51, 255, 51));
+        answer1.setText("Yes");
+        answer1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                answer1ActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(255, 0, 0));
-        jButton2.setText("No");
-        jButton2.setMaximumSize(new java.awt.Dimension(49, 23));
-        jButton2.setMinimumSize(new java.awt.Dimension(49, 23));
-        jButton2.setPreferredSize(new java.awt.Dimension(49, 23));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        answer2.setBackground(new java.awt.Color(255, 0, 0));
+        answer2.setText("No");
+        answer2.setMaximumSize(new java.awt.Dimension(49, 23));
+        answer2.setMinimumSize(new java.awt.Dimension(49, 23));
+        answer2.setPreferredSize(new java.awt.Dimension(49, 23));
+        answer2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                answer2ActionPerformed(evt);
             }
         });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jProgressBar2.setForeground(new java.awt.Color(255, 255, 51));
+        earnPB.setForeground(new java.awt.Color(255, 255, 51));
 
         jLabel2.setText("Earnings");
 
@@ -100,72 +87,69 @@ public class UI extends javax.swing.JFrame implements ActionListener{
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addGap(33, 33, 33)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(44, Short.MAX_VALUE))
+                        .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(25, 25, 25)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(30, Short.MAX_VALUE))
+                    .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
-        jTextField1.setEditable(false);
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("NULL");
+        questionTF.setEditable(false);
+        questionTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        questionTF.setText("NULL");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(52, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 42, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(52, 52, 52))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1)
+                            .addComponent(questionTF))
+                        .addContainerGap())))
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jSeparator1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTextField1)))
-                .addContainerGap())
+                    .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(answer1))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(77, 77, 77)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(questionTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
+                .addComponent(answer1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -192,15 +176,59 @@ public class UI extends javax.swing.JFrame implements ActionListener{
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void answer2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer2ActionPerformed
+        if(index == 10){
+            jPanel1.setEnabled(false);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game finished");
+        }
         
-        jTextField1.setText("Collegue computer left logged on: wyd?");
+        int temp, temp2;
+        temp = (popPB.getValue()+(test[index].getAnswer2points()[0]));
+        temp2 = earnPB.getValue()+(test[index].getAnswer2points()[1]);
+        if(temp >= 0 || temp2 >= 0 || temp <= 100 || temp2 <= 100){
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            index++;
+            questionTF.setText(test[index].getQuestion());
+            answer1.setText(test[index].getAnswer1());
+            answer2.setText(test[index].getAnswer2());
+        }
+        else{
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game Failed");
+        }
         
-        }//GEN-LAST:event_jButton2ActionPerformed
+        }//GEN-LAST:event_answer2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void answer1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer1ActionPerformed
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+        if(index == 10){
+            jPanel1.setEnabled(false);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game finished");
+        }
+        
+        int temp, temp2;
+        temp = popPB.getValue()+(test[index].getAnswer1points()[0]);
+        temp2 = earnPB.getValue()+(test[index].getAnswer1points()[1]);
+        if(temp >= 0 || temp2 >= 0 || temp <= 100 || temp2 <= 100){
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            index++;
+            questionTF.setText(test[index].getQuestion());
+            answer1.setText(test[index].getAnswer1());
+            answer2.setText(test[index].getAnswer2());
+        }
+        else{
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game Failed");
+        }
+    }//GEN-LAST:event_answer1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -230,6 +258,72 @@ public class UI extends javax.swing.JFrame implements ActionListener{
         //</editor-fold>
         
         
+        test = new QuestionStruct[10];
+        
+        test[0].setQuestion("Employees are complaining of sore backs in the work place due to old seats.");
+        test[0].setAnswer1("Invest in new seats");
+        test[0].setAnswer2("Ignore the complaints");
+        test[0].setAnswer1points(10, -10);
+        test[0].setAnswer2points(15, 0);
+        
+        test[1].setQuestion("Company profits are running low due to unpredicted drops in the market. You need to make a decision to improve company finances and minimize the deficit.");
+        test[1].setAnswer1("Cut the hours of workers a minimal amount, reducing what we spend.");
+        test[1].setAnswer2("Fire two employees. We'll be much better off with less people to pay.");
+        test[1].setAnswer1points(-10, 10);
+        test[1].setAnswer2points(-30, 30);
+        
+        test[2].setQuestion("You have been receiving reports of office workers leaving rubbish at their desk how would you proceed. ");
+        test[2].setAnswer1("Give the worker a warning about not keeping their desk up to standards");
+        test[2].setAnswer2("Give the cleaner more hours so they can Allocate more time to cleaning that side of the office");
+        test[2].setAnswer1points(-5, 0);
+        test[2].setAnswer2points(0, -5);
+        
+        test[3].setQuestion("The computers in the office are outdated and running slow. Workers have started to complain as they can't do simple tasks without the internal systems crashing.");
+        test[3].setAnswer1("Upgrade the office computers with the latest technology to ensure performance isn't an issue for years to come.");
+        test[3].setAnswer2("The computers are fine, employees are just being overdramatic. You can get on Google with no problems and browse Facebook on your lunch.");
+        test[3].setAnswer1points(30, -20);
+        test[3].setAnswer2points(-20, 30);
+        
+        test[4].setQuestion("Workers have started to complain that they don't have enough desk-space to work with as the advertisement stands by the window on a busy street take up a lot of office room.");
+        test[4].setAnswer1("They're right, remove the stands and attach posters to the windows instead. Each employee now has more space.");
+        test[4].setAnswer2("The stands are necessary for advertisement – posters are so much smaller and a lot less noticeable!");
+        test[4].setAnswer1points(20, -20);
+        test[4].setAnswer2points(-20, 20);
+       
+        test[5].setQuestion("Your department has received some budget cuts and you have to make some cut backs to accommodate this.");
+        test[5].setAnswer1("Stop the free office coffee program.");
+        test[5].setAnswer2("Stop the free office parking program.");
+        test[5].setAnswer1points(5, -5);
+        test[5].setAnswer2points(25, -20);
+        
+        test[6].setQuestion("Head office are rolling out new software that will improve the way your employees work in a maintainable and sustainable system. The software is a bit more complex to understand than current processes that are followed in the office.");
+        test[6].setAnswer1("Provide training for each employee, slowly rolling out to 20% of staff per week. This will give the workers space to learn and the opportunity to get help from others.");
+        test[6].setAnswer2("We can't afford to take people away from their jobs to learn the new system. They will have to learn through failure and get to know the system individually.");
+        test[6].setAnswer1points(20, -10);
+        test[6].setAnswer2points(-30, 10);
+        
+        test[7].setQuestion("Halloween is coming up and you have room in the budget to reward your workers.");
+        test[7].setAnswer1("Throw a budget Halloween party at the office to celebrate their good work.");
+        test[7].setAnswer2("Award workers with a bonus for their work.");
+        test[7].setAnswer1points(20, 0);
+        test[7].setAnswer2points(20, -5);
+        
+        test[8].setQuestion("It's a busy period during summer and a majority of staff holidays have been allocated over the space of three weeks. This means that there are a lot of customers but not many workers there.");
+        test[8].setAnswer1("Remove holidays from the last few employees that booked to make sure there are enough members of staff present at all times. First come, first serve.");
+        test[8].setAnswer2("Employ temporary staff for the duration of summer so that everything is covered and nobody has to worry about their shifts.");
+        test[8].setAnswer1points(-20, 0);
+        test[8].setAnswer2points(30, -30);
+        
+        test[9].setQuestion("One of your workers has come up with an idea that would change the company for the better.");
+        test[9].setAnswer1("Take the idea as your own and present it to the higher ups.");
+        test[9].setAnswer2("Inform the higher ups about the idea and allow your worker to present it.");
+        test[9].setAnswer1points(50, -50);
+        test[9].setAnswer2points(0, 40);
+        
+        for(int i = 0; i < 10; i++)
+        {  
+            System.out.println(test[i].toString());
+        } 
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -240,16 +334,16 @@ public class UI extends javax.swing.JFrame implements ActionListener{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton answer1;
+    private javax.swing.JButton answer2;
+    private javax.swing.JProgressBar earnPB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JProgressBar jProgressBar2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JProgressBar popPB;
+    private javax.swing.JTextField questionTF;
     // End of variables declaration//GEN-END:variables
     
     
