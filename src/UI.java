@@ -1,7 +1,12 @@
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,7 +24,7 @@ public class UI extends javax.swing.JFrame{
      * Creates new form UI
      */
     
-    private static QuestionStruct test[];
+    private static QuestionStruct [] test;
     private static int index = 0;
     
     
@@ -28,9 +33,80 @@ public class UI extends javax.swing.JFrame{
         jPanel1.setEnabled(false);
         popPB.setValue(50);
         earnPB.setValue(50);
+        
+        
+        SimpleAttributeSet attribs = new SimpleAttributeSet(); 
+        StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
+        questionTF.setParagraphAttributes(attribs,true);
+        answer1.setParagraphAttributes(attribs,true);
+        answer2.setParagraphAttributes(attribs,true);
+        
+        
+        
         questionTF.setText(test[0].getQuestion());
         answer1.setText(test[0].getAnswer1());
         answer2.setText(test[0].getAnswer2());
+        
+        answer1.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                if(index == 10){
+            jPanel1.setEnabled(false);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game finished");
+        }
+        
+        int temp, temp2;
+        temp = popPB.getValue()+(test[index].getAnswer1points()[0]);
+        temp2 = earnPB.getValue()+(test[index].getAnswer1points()[1]);
+        if(temp >= 0 && temp <= 100 && temp2 >= 0 && temp2 <= 100){
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            index++;
+            questionTF.setText(test[index].getQuestion());
+            answer1.setText(test[index].getAnswer1());
+            answer2.setText(test[index].getAnswer2());
+        }
+        else{
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game Failed");
+        }
+            }
+        });
+        
+        answer2.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                if(index == 10){
+            jPanel1.setEnabled(false);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game finished");
+        }
+        
+        int temp, temp2;
+        temp = (popPB.getValue()+(test[index].getAnswer2points()[0]));
+        temp2 = earnPB.getValue()+(test[index].getAnswer2points()[1]);
+        if(temp >= 0 && temp <= 100 && temp2 >= 0 && temp2 <= 100){
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            index++;
+            questionTF.setText(test[index].getQuestion());
+            answer1.setText(test[index].getAnswer1());
+            answer2.setText(test[index].getAnswer2());
+        }
+        else{
+            popPB.setValue(temp);
+            earnPB.setValue(temp2);
+            answer1.setEnabled(false);
+            answer2.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Game Failed");
+        }
+        }
+        });
+        
     }
     
     /**
@@ -43,36 +119,20 @@ public class UI extends javax.swing.JFrame{
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        answer1 = new javax.swing.JButton();
-        answer2 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
         earnPB = new javax.swing.JProgressBar();
         popPB = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        questionTF = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        questionTF = new javax.swing.JTextPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        answer1 = new javax.swing.JTextPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        answer2 = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        answer1.setBackground(new java.awt.Color(51, 255, 51));
-        answer1.setText("Yes");
-        answer1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                answer1ActionPerformed(evt);
-            }
-        });
-
-        answer2.setBackground(new java.awt.Color(255, 0, 0));
-        answer2.setText("No");
-        answer2.setMaximumSize(new java.awt.Dimension(49, 23));
-        answer2.setMinimumSize(new java.awt.Dimension(49, 23));
-        answer2.setPreferredSize(new java.awt.Dimension(49, 23));
-        answer2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                answer2ActionPerformed(evt);
-            }
-        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -114,8 +174,14 @@ public class UI extends javax.swing.JFrame{
         );
 
         questionTF.setEditable(false);
-        questionTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        questionTF.setText("NULL");
+        jScrollPane2.setViewportView(questionTF);
+
+        answer1.setEditable(false);
+        answer1.setBackground(new java.awt.Color(102, 255, 51));
+        jScrollPane1.setViewportView(answer1);
+
+        answer2.setBackground(new java.awt.Color(255, 0, 0));
+        jScrollPane3.setViewportView(answer2);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -124,46 +190,37 @@ public class UI extends javax.swing.JFrame{
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 42, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1)
-                            .addComponent(questionTF))
-                        .addContainerGap())))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(168, 168, 168)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(answer1))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jSeparator1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(281, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(255, 255, 255))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(77, 77, 77)
-                .addComponent(questionTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(13, 13, 13)
-                .addComponent(answer1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(57, 57, 57)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
+                .addGap(10, 10, 10))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,60 +232,6 @@ public class UI extends javax.swing.JFrame{
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void answer2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer2ActionPerformed
-        if(index == 10){
-            jPanel1.setEnabled(false);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
-            JOptionPane.showMessageDialog(null, "Game finished");
-        }
-        
-        int temp, temp2;
-        temp = (popPB.getValue()+(test[index].getAnswer2points()[0]));
-        temp2 = earnPB.getValue()+(test[index].getAnswer2points()[1]);
-        if(temp >= 0 || temp2 >= 0 || temp <= 100 || temp2 <= 100){
-            popPB.setValue(temp);
-            earnPB.setValue(temp2);
-            index++;
-            questionTF.setText(test[index].getQuestion());
-            answer1.setText(test[index].getAnswer1());
-            answer2.setText(test[index].getAnswer2());
-        }
-        else{
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
-            JOptionPane.showMessageDialog(null, "Game Failed");
-        }
-        
-        }//GEN-LAST:event_answer2ActionPerformed
-
-    private void answer1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer1ActionPerformed
-        
-        if(index == 10){
-            jPanel1.setEnabled(false);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
-            JOptionPane.showMessageDialog(null, "Game finished");
-        }
-        
-        int temp, temp2;
-        temp = popPB.getValue()+(test[index].getAnswer1points()[0]);
-        temp2 = earnPB.getValue()+(test[index].getAnswer1points()[1]);
-        if(temp >= 0 || temp2 >= 0 || temp <= 100 || temp2 <= 100){
-            popPB.setValue(temp);
-            earnPB.setValue(temp2);
-            index++;
-            questionTF.setText(test[index].getQuestion());
-            answer1.setText(test[index].getAnswer1());
-            answer2.setText(test[index].getAnswer2());
-        }
-        else{
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
-            JOptionPane.showMessageDialog(null, "Game Failed");
-        }
-    }//GEN-LAST:event_answer1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,12 +257,14 @@ public class UI extends javax.swing.JFrame{
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        }   
         //</editor-fold>
         
         
         test = new QuestionStruct[10];
-        
+        for(int i = 0; i<10; i++){
+            test[i] = new QuestionStruct();
+        }
         test[0].setQuestion("Employees are complaining of sore backs in the work place due to old seats.");
         test[0].setAnswer1("Invest in new seats");
         test[0].setAnswer2("Ignore the complaints");
@@ -320,10 +325,10 @@ public class UI extends javax.swing.JFrame{
         test[9].setAnswer1points(50, -50);
         test[9].setAnswer2points(0, 40);
         
-        for(int i = 0; i < 10; i++)
+        /*for(int i = 0; i < 10; i++)
         {  
             System.out.println(test[i].toString());
-        } 
+        } */
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -334,16 +339,19 @@ public class UI extends javax.swing.JFrame{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton answer1;
-    private javax.swing.JButton answer2;
+    private javax.swing.JTextPane answer1;
+    private javax.swing.JTextPane answer2;
     private javax.swing.JProgressBar earnPB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JProgressBar popPB;
-    private javax.swing.JTextField questionTF;
+    private javax.swing.JTextPane questionTF;
     // End of variables declaration//GEN-END:variables
     
     
