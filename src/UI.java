@@ -33,6 +33,8 @@ public class UI extends javax.swing.JFrame{
         jPanel1.setEnabled(false);
         popPB.setValue(50);
         earnPB.setValue(50);
+        jLabel3.setText("50");
+        jLabel4.setText("50");
         
         
         SimpleAttributeSet attribs = new SimpleAttributeSet(); 
@@ -50,10 +52,9 @@ public class UI extends javax.swing.JFrame{
         answer1.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
                 if(index == 10){
-            jPanel1.setEnabled(false);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
+            
             JOptionPane.showMessageDialog(null, "Game finished");
+            System.exit(0);
         }
         
         int temp, temp2;
@@ -62,17 +63,22 @@ public class UI extends javax.swing.JFrame{
         if(temp >= 0 && temp <= 100 && temp2 >= 0 && temp2 <= 100){
             popPB.setValue(temp);
             earnPB.setValue(temp2);
+            jLabel3.setText(String.valueOf(temp));
+            jLabel4.setText(String.valueOf(temp2));
             index++;
+            if(index < 10){
             questionTF.setText(test[index].getQuestion());
             answer1.setText(test[index].getAnswer1());
             answer2.setText(test[index].getAnswer2());
+            }
         }
         else{
             popPB.setValue(temp);
             earnPB.setValue(temp2);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
+            
+            
             JOptionPane.showMessageDialog(null, "Game Failed");
+            System.exit(0);
         }
             }
         });
@@ -80,29 +86,37 @@ public class UI extends javax.swing.JFrame{
         answer2.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
                 if(index == 10){
-            jPanel1.setEnabled(false);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
+            
+            
             JOptionPane.showMessageDialog(null, "Game finished");
+            System.exit(0);
         }
         
-        int temp, temp2;
+        int temp = 0, temp2 = 0;
+        if(index < 10){
         temp = (popPB.getValue()+(test[index].getAnswer2points()[0]));
         temp2 = earnPB.getValue()+(test[index].getAnswer2points()[1]);
+        }
         if(temp >= 0 && temp <= 100 && temp2 >= 0 && temp2 <= 100){
             popPB.setValue(temp);
             earnPB.setValue(temp2);
+            jLabel3.setText(String.valueOf(temp));
+            jLabel4.setText(String.valueOf(temp2));
             index++;
+            if(index < 10){
             questionTF.setText(test[index].getQuestion());
             answer1.setText(test[index].getAnswer1());
             answer2.setText(test[index].getAnswer2());
+            }
         }
         else{
             popPB.setValue(temp);
             earnPB.setValue(temp2);
-            answer1.setEnabled(false);
-            answer2.setEnabled(false);
+            
+            
+            
             JOptionPane.showMessageDialog(null, "Game Failed");
+            System.exit(0);
         }
         }
         });
@@ -125,6 +139,8 @@ public class UI extends javax.swing.JFrame{
         popPB = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         questionTF = new javax.swing.JTextPane();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -157,7 +173,11 @@ public class UI extends javax.swing.JFrame{
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -165,11 +185,13 @@ public class UI extends javax.swing.JFrame{
                 .addGap(25, 25, 25)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 
@@ -177,10 +199,10 @@ public class UI extends javax.swing.JFrame{
         jScrollPane2.setViewportView(questionTF);
 
         answer1.setEditable(false);
-        answer1.setBackground(new java.awt.Color(102, 255, 51));
+        answer1.setBackground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(answer1);
 
-        answer2.setBackground(new java.awt.Color(255, 0, 0));
+        answer2.setBackground(new java.awt.Color(0, 153, 153));
         jScrollPane3.setViewportView(answer2);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -196,7 +218,7 @@ public class UI extends javax.swing.JFrame{
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(281, Short.MAX_VALUE)
+                .addContainerGap(309, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(255, 255, 255))
         );
@@ -206,10 +228,10 @@ public class UI extends javax.swing.JFrame{
                 .addGap(21, 21, 21)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -242,22 +264,7 @@ public class UI extends javax.swing.JFrame{
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }   
+          
         //</editor-fold>
         
         
@@ -344,6 +351,8 @@ public class UI extends javax.swing.JFrame{
     private javax.swing.JProgressBar earnPB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
