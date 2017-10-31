@@ -202,6 +202,7 @@ public class UI extends javax.swing.JFrame{
         answer1.setBackground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(answer1);
 
+        answer2.setEditable(false);
         answer2.setBackground(new java.awt.Color(0, 153, 153));
         jScrollPane3.setViewportView(answer2);
 
