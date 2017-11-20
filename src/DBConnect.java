@@ -20,6 +20,13 @@ public class DBConnect {
             System.out.println("Error: " + ex);
         }
     }
+    public void closeConnection(){
+        try {
+            con.close();
+        }
+        catch (SQLException e) {
+        }
+    }
 
     public void getData() throws SQLException{
         Statement st = null;
@@ -45,7 +52,7 @@ public class DBConnect {
         }
     }
 
-    int getLogin(String username,String pass){
+    int loginChecker(String username,String pass){
         int status = 0;                                                 //status set as not logged in
         try{
             Statement st;
