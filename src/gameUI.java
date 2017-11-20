@@ -18,17 +18,17 @@ import javax.swing.text.StyleConstants;
  *
  * @author Francesco
  */
-public class UI extends javax.swing.JFrame{
+public class gameUI extends javax.swing.JFrame{
 
     /**
-     * Creates new form UI
+     * Creates new form gameUI
      */
     
     private static QuestionStruct [] test;
     private static int index = 0;
     
     
-    public UI() {
+    public gameUI() {
         initComponents();
         jPanel1.setEnabled(false);
         popPB.setValue(50);
@@ -341,7 +341,7 @@ public class UI extends javax.swing.JFrame{
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UI().setVisible(true);
+                new gameUI().setVisible(true);
             }
         });
     }

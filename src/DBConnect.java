@@ -1,28 +1,33 @@
 import java.sql.Statement;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBConnect {
 
     private Connection con;
-    private Statement st;
-    private ResultSet rs;
+ 
 
     public DBConnect() {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
-            st = con.createStatement();
+            
 
         } catch (Exception ex) {
             System.out.println("Error: " + ex);
         }
     }
 
-    public void getData(){
+    public void getData() throws SQLException{
+        Statement st = null;
+        ResultSet rs = null;
         try{
-
+            
+            st = con.createStatement();
+            
             String query= "SELECT * FROM Question";
             rs = st.executeQuery(query);
             System.out.println("Records from Database");
@@ -32,15 +37,20 @@ public class DBConnect {
                 System.out.println("Question: "+question+" "+"Answer 1"+answer1);
             }
 
-        }catch(Exception ex){
+        }catch(SQLException ex){
             System.out.println(ex);
+            
+            rs.close();
+            st.close();
         }
     }
 
     int getLogin(String username,String pass){
         int status = 0;                                                 //status set as not logged in
         try{
-
+            Statement st;
+            st = con.createStatement();
+            ResultSet rs;
             String query = "SELECT * FROM users";
             rs = st.executeQuery(query);
             System.out.println("Records from Database");
