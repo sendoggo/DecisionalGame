@@ -158,7 +158,7 @@ public class Login extends javax.swing.JFrame {
         }
         //else test credentials
         DBConnect db = new DBConnect();
-        db.loginChecker(username, password);
+        //db.loginChecker(username, password);
         
         
         
@@ -193,6 +193,12 @@ public class Login extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
