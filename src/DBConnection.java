@@ -4,18 +4,18 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DBConnect {
+public class DBConnection {
 
     private Connection con;
  
 
-    public DBConnect() {
+    public DBConnection() {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
+            //con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
             
-
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql1702439","root","");
         } catch (Exception ex) {
             System.out.println("Error: " + ex);
         }
@@ -52,35 +52,31 @@ public class DBConnect {
         }
     }
 
-    int loginChecker(String username,String pass){
-        int status = 0;                                                 //status set as not logged in
+    boolean loginChecker(String _username,String _password){   
+                                                    
         try{
+            String username, password;
             Statement st;
             st = con.createStatement();
             ResultSet rs;
-            String query = "SELECT * FROM users";
+            String query = "SELECT * FROM users WHERE username = '"+ _username+"'";
+            
             rs = st.executeQuery(query);
-            System.out.println("Records from Database");
-            while(rs.next()){                                           //Fetches all database records
-                String fname = rs.getString("fname");
-                String password = rs.getString("password");
-                if (fname.equals(username) && password.equals(pass))    //Compares user input with records
-                {
-                    if (username.equals("Admin"))                       //After match found checks for admin
-                    {
-                        status = 2;                                     //returns 2 for admin status
-                        return status;
-                    }
-
-                    status = 1;                                         //returns 1 for normal user status
+            
+            if (!rs.isBeforeFirst()) { return false; } // no results = no such username in db
+            else{ // matching password control
+                while(rs.next()){
+                    password = rs.getString("password"); 
+                    if (password.equals(_password)) { return true; } // passwords match
+                    else{ return false; } // passwords do not match
 
                 }
-
             }
 
         }catch(Exception ex){
             System.out.println(ex);
+            return false;
         }
-        return status;
+        return false;
     }
 }
