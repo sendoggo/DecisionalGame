@@ -1,5 +1,6 @@
 
 import java.awt.CardLayout;
+import java.awt.List;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Login4
      */
     DBConnection db = new DBConnection();
+    DefaultTableModel model;
     public Main() {
         initComponents();
     }
@@ -67,7 +69,8 @@ public class Main extends javax.swing.JFrame {
         jTable = new javax.swing.JTable();
         deleteBtn = new javax.swing.JButton();
         addPanelBtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        refreshBtn = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JSeparator();
         addPanel = new javax.swing.JPanel();
         addBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -273,7 +276,7 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(passwordTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(loginBtn)
-                .addContainerGap(166, Short.MAX_VALUE))
+                .addContainerGap(179, Short.MAX_VALUE))
         );
 
         mainPanel.add(loginPanel, "loginPanel");
@@ -289,12 +292,35 @@ public class Main extends javax.swing.JFrame {
 
             },
             new String [] {
-
+                "ID", "Question", "Answer1", "Answer2", ""
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane4.setViewportView(jTable);
+        if (jTable.getColumnModel().getColumnCount() > 0) {
+            jTable.getColumnModel().getColumn(4).setResizable(false);
+        }
 
         deleteBtn.setText("Delete Selected Questions");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
 
         addPanelBtn.setText("Add New Questions");
         addPanelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -303,10 +329,10 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refresh.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        refreshBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refresh.png"))); // NOI18N
+        refreshBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                refreshBtnActionPerformed(evt);
             }
         });
 
@@ -314,29 +340,33 @@ public class Main extends javax.swing.JFrame {
         deletePanel.setLayout(deletePanelLayout);
         deletePanelLayout.setHorizontalGroup(
             deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4)
             .addGroup(deletePanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(deletePanelLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jSeparator4)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, deletePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(deleteBtn)
                 .addGap(18, 18, 18)
                 .addComponent(addPanelBtn)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(40, 40, 40))
         );
         deletePanelLayout.setVerticalGroup(
             deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deletePanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(deleteBtn)
                         .addComponent(addPanelBtn)))
-                .addGap(26, 26, 26))
+                .addGap(38, 38, 38))
         );
 
         mainPanel.add(deletePanel, "deletePanel");
@@ -457,7 +487,7 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
                     .addComponent(answer2Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addComponent(addBtn)
                 .addGap(72, 72, 72))
         );
@@ -588,7 +618,7 @@ public class Main extends javax.swing.JFrame {
            
     }//GEN-LAST:event_deletePanelFocusGained
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
         
         ArrayList<QuestionStruct> list = null;
         try {
@@ -596,34 +626,20 @@ public class Main extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        model = (DefaultTableModel) jTable.getModel();
         
-        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
-        
+        model.setRowCount(0);
         Object data[] = new Object[8];
         for(int i = 0; i < list.size(); i++)
         {
             data[0] = list.get(i).getId();
-            
             data[1] = list.get(i).getQuestion();
             data[2] = list.get(i).getAnswer1();
             data[3] = list.get(i).getAnswer2();
-            data[4] = list.get(i).getAnswer1points()[0];
-            data[5] = list.get(i).getAnswer1points()[1];
-            data[6] = list.get(i).getAnswer2points()[0];
-            data[7] = list.get(i).getAnswer2points()[1];
-            System.out.println(data[0].toString());
-            System.out.println(data[1].toString());
-            System.out.println(data[2].toString());
-            System.out.println(data[3].toString());
-            System.out.println(data[4].toString());
-            System.out.println(data[5].toString());
-            System.out.println(data[6].toString());
-            System.out.println(data[7].toString());
-            
             
             model.addRow(data);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_refreshBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         QuestionStruct obj = new QuestionStruct(newQuestionTF.getText(),answer1TF.getText(), answer2TF.getText(),(Integer)answer1Pop.getValue(), (Integer)answer2Pop.getValue(),(Integer) answer1Earn.getValue(), (Integer)answer2Earn.getValue());
@@ -634,7 +650,7 @@ public class Main extends javax.swing.JFrame {
             return;
         }
         //
-        int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this question?", "Attention",JOptionPane.YES_NO_OPTION);
+        int answer = JOptionPane.showConfirmDialog(null, "Confirm To Add The Question?", "Attention",JOptionPane.YES_NO_OPTION);
         
         if (answer == JOptionPane.YES_OPTION) {
             //insert question in database
@@ -657,6 +673,44 @@ public class Main extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_addBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        
+        ArrayList<Integer> indexes = new ArrayList<>();
+        boolean check = false, success = true;
+        indexes.clear();
+        for(int i = 0; i < jTable.getRowCount(); i++){
+            //System.out.println(jTable.getValueAt(i, 4));
+            if((jTable.getValueAt(i, 4))!= null){
+                if((boolean)(jTable.getValueAt(i, 4))!= false){
+                    indexes.add((int)jTable.getValueAt(i, 0));
+                    check = true;
+                }
+            }                
+        }
+        
+        if(check) //some elements selected
+        {
+            int answer = JOptionPane.showConfirmDialog(null, "Confirm To Delete ["+indexes.size()+"] items?", "Attention",JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+            //delete questions from db
+                for(int x = 0; x < indexes.size(); x ++){
+                    if(!db.deleteQuestion(indexes.get(x))){ success = false; }
+                }
+                if(success){ JOptionPane.showMessageDialog(null, "Data Successfully Deleted To Database","Successful", JOptionPane.INFORMATION_MESSAGE); refreshBtn.doClick();}
+                else { JOptionPane.showMessageDialog(null, "Operation Not Fully Completed","Error", JOptionPane.ERROR_MESSAGE); }
+            
+            }
+                
+            
+        }
+        else{ //no element selected
+            JOptionPane.showMessageDialog(null, "No Questions Selected!","Information", JOptionPane.INFORMATION_MESSAGE);
+            
+        }
+        
+        
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -694,7 +748,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JProgressBar earnPB;
     private javax.swing.JButton editBtn;
     private javax.swing.JPanel gamePanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -719,6 +772,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTable jTable;
     private javax.swing.JButton loginBtn;
     private javax.swing.JPanel loginPanel;
@@ -728,6 +782,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton playBtn;
     private javax.swing.JProgressBar popPB;
     private javax.swing.JTextPane questionTF;
+    private javax.swing.JButton refreshBtn;
     private javax.swing.JTextField usernameTF;
     // End of variables declaration//GEN-END:variables
 }

@@ -68,6 +68,21 @@ public class DBConnection {
             return false;
         }
     }
+    
+    boolean deleteQuestion(int id){
+        
+        try {
+            String query = "DELETE FROM questions WHERE id="+id;
+            Statement st;
+            st = con.createStatement();
+            
+            st.executeUpdate(query);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            return false;
+        }
+    }
     boolean loginChecker(String _username,String _password){   
                                                     
         try{
