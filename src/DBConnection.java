@@ -1,6 +1,7 @@
 import java.sql.Statement;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,30 +29,45 @@ public class DBConnection {
         }
     }
 
-    public void getData() throws SQLException{
+    public ArrayList<QuestionStruct> getQuestions() throws SQLException{
         Statement st = null;
         ResultSet rs = null;
+        ArrayList<QuestionStruct> list = new ArrayList<>();
+        
         try{
             
             st = con.createStatement();
             
-            String query= "SELECT * FROM Question";
+            String query= "SELECT * FROM questions";
             rs = st.executeQuery(query);
-            System.out.println("Records from Database");
             while(rs.next()){
+                
                 String question = rs.getString("question");
                 String answer1 = rs.getString("answer1");
-                System.out.println("Question: "+question+" "+"Answer 1"+answer1);
+                list.add(new QuestionStruct(rs.getInt("id"),rs.getString("question"), rs.getString("answer1"), rs.getString("answer2"),rs.getInt("answer1Pop"),rs.getInt("answer2Pop"),rs.getInt("answer1Earn"),rs.getInt("answer2Earn")));
+                
             }
-
+            return list;
         }catch(SQLException ex){
             System.out.println(ex);
+        }
+        
+        return list;
+    }
+    boolean insertNewQuestion(String question, String answer1, String answer2, int answer1Pop, int answer2Pop, int answer1Earn, int answer2Earn){
+        
+        try {
+            String query = "INSERT INTO questions(question, answer1, answer2, answer1Pop, answer2Pop, answer1Earn, answer2Earn) VALUES (\""+question+"\",\""+answer1+"\",\""+answer2+"\","+answer1Pop+","+answer2Pop+","+answer1Earn+","+answer2Earn+")";
+            Statement st;
+            st = con.createStatement();
             
-            rs.close();
-            st.close();
+            st.executeUpdate(query);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            return false;
         }
     }
-
     boolean loginChecker(String _username,String _password){   
                                                     
         try{

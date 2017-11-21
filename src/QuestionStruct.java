@@ -20,6 +20,29 @@ public class QuestionStruct {
         
     }
 
+    public QuestionStruct(int id, String question, String answer1, String answer2, int answer1pop, int answer2pop, int answer1earn,  int answer2earn) {
+        this.id = id;
+        this.question = question;
+        this.answer1 = answer1;
+        this.answer2 = answer2;
+        this.answer1points[0] = answer1pop;
+        this.answer1points[1] = answer1earn;
+        this.answer2points[0] = answer2pop;
+        this.answer2points[1] = answer2earn;
+        
+    }
+    public QuestionStruct(String question, String answer1, String answer2, int answer1pop, int answer2pop, int answer1earn,  int answer2earn) {
+        
+        this.question = question;
+        this.answer1 = answer1;
+        this.answer2 = answer2;
+        this.answer1points[0] = answer1pop;
+        this.answer1points[1] = answer1earn;
+        this.answer2points[0] = answer2pop;
+        this.answer2points[1] = answer2earn;
+        
+    }
+
     public int getId() {
         return id;
     }

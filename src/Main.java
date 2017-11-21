@@ -1,7 +1,12 @@
 
 import java.awt.CardLayout;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,7 +23,7 @@ public class Main extends javax.swing.JFrame {
     /**
      * Creates new form Login4
      */
-    
+    DBConnection db = new DBConnection();
     public Main() {
         initComponents();
     }
@@ -59,26 +64,27 @@ public class Main extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         deletePanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable = new javax.swing.JTable();
         deleteBtn = new javax.swing.JButton();
         addPanelBtn = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         addPanel = new javax.swing.JPanel();
         addBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        newQuestionTF = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
-        jSpinner3 = new javax.swing.JSpinner();
-        jSpinner4 = new javax.swing.JSpinner();
+        answer1TF = new javax.swing.JTextField();
+        answer2TF = new javax.swing.JTextField();
+        answer1Pop = new javax.swing.JSpinner();
+        answer1Earn = new javax.swing.JSpinner();
+        answer2Pop = new javax.swing.JSpinner();
+        answer2Earn = new javax.swing.JSpinner();
         jSeparator3 = new javax.swing.JSeparator();
         buttonsPanel = new javax.swing.JPanel();
         playBtn = new javax.swing.JButton();
@@ -272,7 +278,13 @@ public class Main extends javax.swing.JFrame {
 
         mainPanel.add(loginPanel, "loginPanel");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        deletePanel.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                deletePanelFocusGained(evt);
+            }
+        });
+
+        jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -280,7 +292,7 @@ public class Main extends javax.swing.JFrame {
 
             }
         ));
-        jScrollPane4.setViewportView(jTable1);
+        jScrollPane4.setViewportView(jTable);
 
         deleteBtn.setText("Delete Selected Questions");
 
@@ -288,6 +300,13 @@ public class Main extends javax.swing.JFrame {
         addPanelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addPanelBtnActionPerformed(evt);
+            }
+        });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refresh.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -299,7 +318,9 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(deletePanelLayout.createSequentialGroup()
-                .addGap(64, 64, 64)
+                .addGap(19, 19, 19)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(deleteBtn)
                 .addGap(18, 18, 18)
                 .addComponent(addPanelBtn)
@@ -309,16 +330,23 @@ public class Main extends javax.swing.JFrame {
             deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deletePanelLayout.createSequentialGroup()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteBtn)
-                    .addComponent(addPanelBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(deleteBtn)
+                        .addComponent(addPanelBtn)))
                 .addGap(26, 26, 26))
         );
 
         mainPanel.add(deletePanel, "deletePanel");
 
         addBtn.setText("Add Question");
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Question Details");
 
@@ -336,6 +364,14 @@ public class Main extends javax.swing.JFrame {
 
         jLabel15.setText("Answer2 Earnings:");
 
+        answer1Pop.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+
+        answer1Earn.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+
+        answer2Pop.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+
+        answer2Earn.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+
         javax.swing.GroupLayout addPanelLayout = new javax.swing.GroupLayout(addPanel);
         addPanel.setLayout(addPanelLayout);
         addPanelLayout.setHorizontalGroup(
@@ -348,19 +384,19 @@ public class Main extends javax.swing.JFrame {
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel15)
                                 .addGap(18, 18, 18)
-                                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(answer2Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel14)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(answer2Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(answer1Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addGap(18, 18, 18)
-                                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(answer1Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -369,9 +405,9 @@ public class Main extends javax.swing.JFrame {
                             .addComponent(jLabel11))
                         .addGap(18, 18, 18)
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField3)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField2))))
+                            .addComponent(answer2TF)
+                            .addComponent(newQuestionTF)
+                            .addComponent(answer1TF))))
                 .addContainerGap())
             .addGroup(addPanelLayout.createSequentialGroup()
                 .addGap(173, 173, 173)
@@ -396,31 +432,31 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newQuestionTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer1TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer2TF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer1Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer1Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
-                    .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer2Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
-                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(answer2Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addComponent(addBtn)
                 .addGap(72, 72, 72))
@@ -511,6 +547,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void closeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeBtnActionPerformed
+        db.closeConnection();
         System.exit(0);
     }//GEN-LAST:event_closeBtnActionPerformed
 
@@ -522,21 +559,22 @@ public class Main extends javax.swing.JFrame {
 
         //if empty error
         if(username.isEmpty() || password.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Please insert your Credentials","Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please insert your Credentials","Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         //else test credentials
-        DBConnection db = new DBConnection();
+        
         boolean status = db.loginChecker(username, password);
-        db.closeConnection();
+        
 
         if(status == false){
-            JOptionPane.showMessageDialog(null, "Invalid Credentials!","Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid Credentials!","Error", JOptionPane.ERROR_MESSAGE);
         }
         else{
             JOptionPane.showMessageDialog(null, "Valid Credentials!","Successful", JOptionPane.INFORMATION_MESSAGE);
             CardLayout card = (CardLayout)mainPanel.getLayout();
             card.show(mainPanel, "deletePanel");
+            
             
         }
     }//GEN-LAST:event_loginBtnActionPerformed
@@ -546,47 +584,86 @@ public class Main extends javax.swing.JFrame {
         card.show(mainPanel, "addPanel");
     }//GEN-LAST:event_addPanelBtnActionPerformed
 
+    private void deletePanelFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_deletePanelFocusGained
+           
+    }//GEN-LAST:event_deletePanelFocusGained
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        ArrayList<QuestionStruct> list = null;
+        try {
+            list = db.getQuestions();
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        
+        Object data[] = new Object[8];
+        for(int i = 0; i < list.size(); i++)
+        {
+            data[0] = list.get(i).getId();
+            
+            data[1] = list.get(i).getQuestion();
+            data[2] = list.get(i).getAnswer1();
+            data[3] = list.get(i).getAnswer2();
+            data[4] = list.get(i).getAnswer1points()[0];
+            data[5] = list.get(i).getAnswer1points()[1];
+            data[6] = list.get(i).getAnswer2points()[0];
+            data[7] = list.get(i).getAnswer2points()[1];
+            System.out.println(data[0].toString());
+            System.out.println(data[1].toString());
+            System.out.println(data[2].toString());
+            System.out.println(data[3].toString());
+            System.out.println(data[4].toString());
+            System.out.println(data[5].toString());
+            System.out.println(data[6].toString());
+            System.out.println(data[7].toString());
+            
+            
+            model.addRow(data);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        QuestionStruct obj = new QuestionStruct(newQuestionTF.getText(),answer1TF.getText(), answer2TF.getText(),(Integer)answer1Pop.getValue(), (Integer)answer2Pop.getValue(),(Integer) answer1Earn.getValue(), (Integer)answer2Earn.getValue());
+        
+        
+        if(obj.getQuestion().isEmpty() || obj.getAnswer1().isEmpty() || obj.getAnswer2().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please insert Question, Answer 1 & Answer 2","Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        //
+        int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this question?", "Attention",JOptionPane.YES_NO_OPTION);
+        
+        if (answer == JOptionPane.YES_OPTION) {
+            //insert question in database
+            
+            if(db.insertNewQuestion(obj.getQuestion(), obj.getAnswer1(), obj.getAnswer2(), obj.getAnswer1points()[0], obj.getAnswer2points()[0], obj.getAnswer1points()[1], obj.getAnswer2points()[1])){
+                JOptionPane.showMessageDialog(null, "Data Successfully Uploaded To Database","Successful", JOptionPane.INFORMATION_MESSAGE);
+                newQuestionTF.setText("");
+                answer1TF.setText("");
+                answer2TF.setText("");
+                answer1Pop.setValue(0);
+                answer2Pop.setValue(0);
+                answer1Earn.setValue(0);
+                answer2Earn.setValue(0);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Unable to Upload the Data to Database","Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+        }
+        
+    }//GEN-LAST:event_addBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+      
+        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -603,7 +680,13 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel addPanel;
     private javax.swing.JButton addPanelBtn;
     private javax.swing.JTextPane answer1;
+    private javax.swing.JSpinner answer1Earn;
+    private javax.swing.JSpinner answer1Pop;
+    private javax.swing.JTextField answer1TF;
     private javax.swing.JTextPane answer2;
+    private javax.swing.JSpinner answer2Earn;
+    private javax.swing.JSpinner answer2Pop;
+    private javax.swing.JTextField answer2TF;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JButton closeBtn;
     private javax.swing.JButton deleteBtn;
@@ -611,6 +694,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JProgressBar earnPB;
     private javax.swing.JButton editBtn;
     private javax.swing.JPanel gamePanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -635,17 +719,11 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JSpinner jSpinner3;
-    private javax.swing.JSpinner jSpinner4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTable jTable;
     private javax.swing.JButton loginBtn;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JTextField newQuestionTF;
     private javax.swing.JPasswordField passwordTF;
     private javax.swing.JButton playBtn;
     private javax.swing.JProgressBar popPB;
