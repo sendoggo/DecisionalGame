@@ -89,7 +89,7 @@ public class DBConnection {
             Statement st;
             st = con.createStatement();
             ResultSet rs;
-            String query = "SELECT * FROM users WHERE username = '"+ _username+"'";
+            String query = "SELECT * FROM admins WHERE username = '"+ _username+"'";
             
             rs = st.executeQuery(query);
             
