@@ -1,13 +1,19 @@
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.awt.CardLayout;
 import java.awt.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,12 +30,28 @@ public class Main extends javax.swing.JFrame {
     /**
      * Creates new form Login4
      */
+    private int popPoints;
+    private int earnPoints;
+    private int currentQuestionIndex;
+    private ArrayList<QuestionStruct> questionList = null;
     DBConnection db = new DBConnection();
     DefaultTableModel model;
+    boolean loggedIn = false;
+    
     public Main() {
         initComponents();
+        
+        popPB.setValue(50);
+        earnPB.setValue(50);
+        
+        
+        SimpleAttributeSet attribs = new SimpleAttributeSet(); 
+        StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
+        questionTF.setParagraphAttributes(attribs,true);
+        answer1.setParagraphAttributes(attribs,true);
+        answer2.setParagraphAttributes(attribs,true);
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,13 +63,14 @@ public class Main extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         gamePanel = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
         jPanel3 = new javax.swing.JPanel();
         earnPB = new javax.swing.JProgressBar();
         popPB = new javax.swing.JProgressBar();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        popLabel = new javax.swing.JLabel();
+        earnLabel = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -56,6 +79,7 @@ public class Main extends javax.swing.JFrame {
         answer1 = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         answer2 = new javax.swing.JTextPane();
+        jLabel16 = new javax.swing.JLabel();
         loginPanel = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -71,6 +95,7 @@ public class Main extends javax.swing.JFrame {
         addPanelBtn = new javax.swing.JButton();
         refreshBtn = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
+        jLabel17 = new javax.swing.JLabel();
         addPanel = new javax.swing.JPanel();
         addBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -95,9 +120,25 @@ public class Main extends javax.swing.JFrame {
         closeBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         mainPanel.setLayout(new java.awt.CardLayout());
+
+        gamePanel.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                gamePanelFocusGained(evt);
+            }
+        });
+        gamePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                gamePanelComponentShown(evt);
+            }
+        });
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -107,112 +148,153 @@ public class Main extends javax.swing.JFrame {
 
         jLabel4.setText("Popularity");
 
+        popLabel.setText("50");
+
+        earnLabel.setText("50");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(popLabel)
+                    .addComponent(earnLabel))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel6)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(popPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(popLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(earnPB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(earnLabel))
+                .addContainerGap())
         );
 
         questionTF.setEditable(false);
+        questionTF.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                questionTFAncestorAdded(evt);
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
+        questionTF.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                questionTFComponentShown(evt);
+            }
+        });
         jScrollPane2.setViewportView(questionTF);
 
         answer1.setEditable(false);
         answer1.setBackground(new java.awt.Color(0, 102, 102));
+        answer1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                answer1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(answer1);
 
         answer2.setEditable(false);
         answer2.setBackground(new java.awt.Color(0, 153, 153));
+        answer2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                answer2MouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(answer2);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(86, 86, 86))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane1)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jLabel16.setText("Click on one of the 2 answers:");
 
         javax.swing.GroupLayout gamePanelLayout = new javax.swing.GroupLayout(gamePanel);
         gamePanel.setLayout(gamePanelLayout);
         gamePanelLayout.setHorizontalGroup(
             gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, gamePanelLayout.createSequentialGroup()
+                .addContainerGap(102, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(98, 98, 98))
             .addGroup(gamePanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane3)
+                    .addGroup(gamePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(gamePanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel5)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(gamePanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel6)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         gamePanelLayout.setVerticalGroup(
             gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(gamePanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
+            .addGroup(gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(gamePanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel5)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(gamePanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel6)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         mainPanel.add(gamePanel, "gamePanel");
+
+        loginPanel.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                loginPanelAncestorAdded(evt);
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
 
         jLabel7.setText("Username: ");
 
@@ -336,15 +418,13 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jLabel17.setText("*Refresh if you cannot see your questions");
+
         javax.swing.GroupLayout deletePanelLayout = new javax.swing.GroupLayout(deletePanel);
         deletePanel.setLayout(deletePanelLayout);
         deletePanelLayout.setHorizontalGroup(
             deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane4)
-            .addGroup(deletePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSeparator4)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, deletePanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,12 +433,22 @@ public class Main extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(addPanelBtn)
                 .addGap(40, 40, 40))
+            .addGroup(deletePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator4)
+                    .addGroup(deletePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         deletePanelLayout.setVerticalGroup(
             deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deletePanelLayout.createSequentialGroup()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,7 +456,7 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(deletePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(deleteBtn)
                         .addComponent(addPanelBtn)))
-                .addGap(38, 38, 38))
+                .addContainerGap())
         );
 
         mainPanel.add(deletePanel, "deletePanel");
@@ -394,13 +484,13 @@ public class Main extends javax.swing.JFrame {
 
         jLabel15.setText("Answer2 Earnings:");
 
-        answer1Pop.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+        answer1Pop.setModel(new javax.swing.SpinnerNumberModel(0, -100, 100, 1));
 
-        answer1Earn.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+        answer1Earn.setModel(new javax.swing.SpinnerNumberModel(0, -100, 100, 1));
 
-        answer2Pop.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+        answer2Pop.setModel(new javax.swing.SpinnerNumberModel(0, -100, 100, 1));
 
-        answer2Earn.setModel(new javax.swing.SpinnerNumberModel(0, -99, 99, 1));
+        answer2Earn.setModel(new javax.swing.SpinnerNumberModel(0, -100, 100, 1));
 
         javax.swing.GroupLayout addPanelLayout = new javax.swing.GroupLayout(addPanel);
         addPanel.setLayout(addPanelLayout);
@@ -411,25 +501,6 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(addPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel15)
-                                .addGap(18, 18, 18)
-                                .addComponent(answer2Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(addPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel14)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(answer2Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(addPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(answer1Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(addPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addGap(18, 18, 18)
-                                .addComponent(answer1Earn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(addPanelLayout.createSequentialGroup()
-                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel10)
                             .addComponent(jLabel11))
@@ -437,7 +508,26 @@ public class Main extends javax.swing.JFrame {
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(answer2TF)
                             .addComponent(newQuestionTF)
-                            .addComponent(answer1TF))))
+                            .addComponent(answer1TF)))
+                    .addGroup(addPanelLayout.createSequentialGroup()
+                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(addPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(answer1Earn, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(addPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addGap(18, 18, 18)
+                                .addComponent(answer1Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(addPanelLayout.createSequentialGroup()
+                                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel15))
+                                .addGap(18, 18, 18)
+                                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(answer2Pop)
+                                    .addComponent(answer2Earn))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(addPanelLayout.createSequentialGroup()
                 .addGap(173, 173, 173)
@@ -568,6 +658,14 @@ public class Main extends javax.swing.JFrame {
     private void playBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playBtnActionPerformed
         CardLayout card = (CardLayout)mainPanel.getLayout();
         card.show(mainPanel, "gamePanel");
+        questionTF.setText("No.: "+1+". "+questionList.get(0).getQuestion());
+        answer1.setText(questionList.get(0).getAnswer1()+"pop:"+questionList.get(0).getAnswer1points()[0]+",earn:"+questionList.get(0).getAnswer1points()[1]);
+        answer2.setText(questionList.get(0).getAnswer2()+"pop:"+questionList.get(0).getAnswer2points()[0]+",earn:"+questionList.get(0).getAnswer2points()[1]);
+        popPB.setValue(50);
+        earnPB.setValue(50);
+        currentQuestionIndex = 0;
+        popLabel.setText(Integer.toString(50));
+        earnLabel.setText(Integer.toString(50));
         
     }//GEN-LAST:event_playBtnActionPerformed
 
@@ -604,7 +702,7 @@ public class Main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Valid Credentials!","Successful", JOptionPane.INFORMATION_MESSAGE);
             CardLayout card = (CardLayout)mainPanel.getLayout();
             card.show(mainPanel, "deletePanel");
-            
+            loggedIn = true;
             
         }
     }//GEN-LAST:event_loginBtnActionPerformed
@@ -649,12 +747,11 @@ public class Main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please insert Question, Answer 1 & Answer 2","Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        //
+        
         int answer = JOptionPane.showConfirmDialog(null, "Confirm To Add The Question?", "Attention",JOptionPane.YES_NO_OPTION);
         
         if (answer == JOptionPane.YES_OPTION) {
             //insert question in database
-            
             if(db.insertNewQuestion(obj.getQuestion(), obj.getAnswer1(), obj.getAnswer2(), obj.getAnswer1points()[0], obj.getAnswer2points()[0], obj.getAnswer1points()[1], obj.getAnswer2points()[1])){
                 JOptionPane.showMessageDialog(null, "Data Successfully Uploaded To Database","Successful", JOptionPane.INFORMATION_MESSAGE);
                 newQuestionTF.setText("");
@@ -669,9 +766,7 @@ public class Main extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Unable to Upload the Data to Database","Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
         }
-        
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
@@ -699,25 +794,124 @@ public class Main extends javax.swing.JFrame {
                 }
                 if(success){ JOptionPane.showMessageDialog(null, "Data Successfully Deleted To Database","Successful", JOptionPane.INFORMATION_MESSAGE); refreshBtn.doClick();}
                 else { JOptionPane.showMessageDialog(null, "Operation Not Fully Completed","Error", JOptionPane.ERROR_MESSAGE); }
-            
-            }
-                
-            
+            }  
         }
-        else{ //no element selected
-            JOptionPane.showMessageDialog(null, "No Questions Selected!","Information", JOptionPane.INFORMATION_MESSAGE);
-            
-        }
-        
-        
+        else{ JOptionPane.showMessageDialog(null, "No Questions Selected!","Information", JOptionPane.INFORMATION_MESSAGE); }//no element selected
     }//GEN-LAST:event_deleteBtnActionPerformed
 
+    private void gamePanelFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_gamePanelFocusGained
+        
+    }//GEN-LAST:event_gamePanelFocusGained
+
+    private void gamePanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_gamePanelComponentShown
+
+    }//GEN-LAST:event_gamePanelComponentShown
+
+    private void questionTFComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_questionTFComponentShown
+        
+    }//GEN-LAST:event_questionTFComponentShown
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        System.out.println("wassup");
+    }//GEN-LAST:event_formWindowOpened
+
+    private void answer1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_answer1MouseClicked
+        points(0);
+    }//GEN-LAST:event_answer1MouseClicked
+
+    private void answer2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_answer2MouseClicked
+        points(1);
+    }//GEN-LAST:event_answer2MouseClicked
+
+    private void questionTFAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_questionTFAncestorAdded
+        
+        try {
+            questionList = db.getQuestions();
+        } catch (SQLException ex) {
+            System.out.println();
+        }
+        questionTF.setText("No.: "+1+". "+questionList.get(0).getQuestion());
+        answer1.setText(questionList.get(0).getAnswer1()+"pop:"+questionList.get(0).getAnswer1points()[0]+",earn:"+questionList.get(0).getAnswer1points()[1]);
+        answer2.setText(questionList.get(0).getAnswer2()+"pop:"+questionList.get(0).getAnswer2points()[0]+",earn:"+questionList.get(0).getAnswer2points()[1]);
+        popPB.setValue(50);
+        earnPB.setValue(50);
+        popLabel.setText(Integer.toString(50));
+        earnLabel.setText(Integer.toString(50));
+    }//GEN-LAST:event_questionTFAncestorAdded
+
+    private void loginPanelAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_loginPanelAncestorAdded
+        if(loggedIn){
+            CardLayout card = (CardLayout)mainPanel.getLayout();
+            card.show(mainPanel, "deletePanel");
+        }
+    }//GEN-LAST:event_loginPanelAncestorAdded
+
+    public void points(int id){
+        int popPoints = 0;
+        int earnPoints = 0;
+        
+        if(id == 0){ //Answer 1 clicked
+            popPoints = (popPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer1points()[0]));
+            earnPoints = (earnPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer1points()[1]));
+            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){
+                popPB.setValue(popPoints);
+                earnPB.setValue(earnPoints);
+                popLabel.setText(Integer.toString(popPoints));
+                earnLabel.setText(Integer.toString(earnPoints));
+                if(currentQuestionIndex < questionList.size()){
+                    currentQuestionIndex++;
+                    if(currentQuestionIndex == questionList.size()){ // game won
+                        JOptionPane.showMessageDialog(null, "Game Ended: You Won!","SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+                        currentQuestionIndex = 0;
+                        playBtn.doClick();
+                    }
+                    else{ 
+                        questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
+                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
+                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
+                    } 
+                } 
+            }
+            else{ // game lost
+                JOptionPane.showMessageDialog(null, "Game Ended: You Lose!","GAME OVER", JOptionPane.ERROR_MESSAGE);
+                currentQuestionIndex = 0;
+                playBtn.doClick();
+            }
+        }
+        else{ //Answer 2 clicked
+            popPoints = (popPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer2points()[0]));
+            earnPoints = (earnPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer2points()[1]));
+            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){
+                popPB.setValue(popPoints);
+                earnPB.setValue(earnPoints);
+                popLabel.setText(Integer.toString(popPoints));
+                earnLabel.setText(Integer.toString(earnPoints));
+                if(currentQuestionIndex < questionList.size()){
+                    currentQuestionIndex++;
+                    if(currentQuestionIndex == questionList.size()){ // game won
+                        JOptionPane.showMessageDialog(null, "Game Ended: You Won!","SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+                        currentQuestionIndex = 0;
+                        playBtn.doClick();
+                    }
+                    else{ 
+                        questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
+                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
+                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
+                    }
+            }
+            }
+            else{ // game lost
+                JOptionPane.showMessageDialog(null, "Game Ended: You Lose!","GAME OVER", JOptionPane.ERROR_MESSAGE);
+                currentQuestionIndex = 0;
+                playBtn.doClick();
+            }
+        
+            }
+    }
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-      
-        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -745,6 +939,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton closeBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JPanel deletePanel;
+    private javax.swing.JLabel earnLabel;
     private javax.swing.JProgressBar earnPB;
     private javax.swing.JButton editBtn;
     private javax.swing.JPanel gamePanel;
@@ -755,6 +950,8 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -763,7 +960,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -780,6 +976,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTextField newQuestionTF;
     private javax.swing.JPasswordField passwordTF;
     private javax.swing.JButton playBtn;
+    private javax.swing.JLabel popLabel;
     private javax.swing.JProgressBar popPB;
     private javax.swing.JTextPane questionTF;
     private javax.swing.JButton refreshBtn;
