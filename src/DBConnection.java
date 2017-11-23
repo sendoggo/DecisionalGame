@@ -12,9 +12,11 @@ public class DBConnection {
  
 
     public DBConnection() {
+        
         try {
-
+            // recall the external library for db connection
             Class.forName("com.mysql.jdbc.Driver");
+            // connection string + used db + username and password
             //con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
             con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql1702439","root","");
         } catch (Exception ex) {
@@ -32,6 +34,7 @@ public class DBConnection {
         }
     }
 
+    // returns an arraylist of all the questions on the db
     public ArrayList<QuestionStruct> getQuestions() throws SQLException{
         Statement st = null;
         ResultSet rs = null;
@@ -57,6 +60,8 @@ public class DBConnection {
         
         return list;
     }
+    
+    // insert a new question with the relative answers and scoring to the db
     boolean insertNewQuestion(String question, String answer1, String answer2, int answer1Pop, int answer2Pop, int answer1Earn, int answer2Earn){
         
         try {
@@ -72,6 +77,7 @@ public class DBConnection {
         }
     }
     
+    // delete a question and relative answers and scoring based on the question ID
     boolean deleteQuestion(int id){
         
         try {
@@ -86,6 +92,8 @@ public class DBConnection {
             return false;
         }
     }
+    
+    // check the validity of entered username and password
     boolean loginChecker(String _username,String _password){   
                                                     
         try{

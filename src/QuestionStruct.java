@@ -8,6 +8,9 @@
  *
  * @author Francesco
  */
+
+// class for holding the information of a question and its relative answers and scoring
+// and methods for setting and getting all the information
 public class QuestionStruct {
     private int id;
     private String question, answer1, answer2;
@@ -15,7 +18,7 @@ public class QuestionStruct {
     private int answer1points[] = new int[2];
     
     private int answer2points[] = new int[2];
-
+    
     public QuestionStruct() {
         
     }
