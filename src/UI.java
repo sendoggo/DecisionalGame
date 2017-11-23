@@ -115,6 +115,7 @@ public class UI extends javax.swing.JFrame {
         closeBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Decisional Game");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -186,12 +187,12 @@ public class UI extends javax.swing.JFrame {
 
         questionTF.setEditable(false);
         questionTF.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 questionTFAncestorAdded(evt);
             }
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
             }
         });
         questionTF.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -282,12 +283,12 @@ public class UI extends javax.swing.JFrame {
         mainPanel.add(gamePanel, "gamePanel");
 
         loginPanel.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 loginPanelAncestorAdded(evt);
             }
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
             }
         });
 
@@ -507,21 +508,19 @@ public class UI extends javax.swing.JFrame {
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(addPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(answer1Earn, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(addPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel12)
                                 .addGap(18, 18, 18)
                                 .addComponent(answer1Pop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel14)
-                                    .addComponent(jLabel15))
+                                    .addComponent(jLabel15)
+                                    .addComponent(jLabel13))
                                 .addGap(18, 18, 18)
                                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(answer2Pop)
-                                    .addComponent(answer2Earn))))
+                                    .addComponent(answer2Earn)
+                                    .addComponent(answer1Earn))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(addPanelLayout.createSequentialGroup()
@@ -588,7 +587,7 @@ public class UI extends javax.swing.JFrame {
             }
         });
 
-        editBtn.setText("Edit Question");
+        editBtn.setText("Edit Questions");
         editBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editBtnActionPerformed(evt);
@@ -841,8 +840,8 @@ public class UI extends javax.swing.JFrame {
         }
         // sets the question, answer1, answer2 fields and the scoring
         questionTF.setText("No.: "+1+". "+questionList.get(0).getQuestion());
-        answer1.setText(questionList.get(0).getAnswer1()+"pop:"+questionList.get(0).getAnswer1points()[0]+",earn:"+questionList.get(0).getAnswer1points()[1]);
-        answer2.setText(questionList.get(0).getAnswer2()+"pop:"+questionList.get(0).getAnswer2points()[0]+",earn:"+questionList.get(0).getAnswer2points()[1]);
+        answer1.setText(questionList.get(0).getAnswer1());
+        answer2.setText(questionList.get(0).getAnswer2());
         popPB.setValue(50);
         earnPB.setValue(50);
         popLabel.setText(Integer.toString(50));
@@ -883,8 +882,8 @@ public class UI extends javax.swing.JFrame {
                     }
                     else{ // set next question
                         questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
-                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
-                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
+                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1());
+                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2());
                     } 
                 } 
             }
@@ -916,8 +915,8 @@ public class UI extends javax.swing.JFrame {
                     }
                     else{ // sets following question
                         questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
-                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
-                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
+                        answer1.setText(questionList.get(currentQuestionIndex).getAnswer1());
+                        answer2.setText(questionList.get(currentQuestionIndex).getAnswer2());
                     }
             }
             }
