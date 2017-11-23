@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class DBConnection {
 
@@ -18,6 +19,9 @@ public class DBConnection {
             con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql1702439","root","");
         } catch (Exception ex) {
             System.out.println("Error: " + ex);
+            JOptionPane.showMessageDialog(null, "Unable to connect to the Database","Error", JOptionPane.ERROR_MESSAGE);
+            
+            System.exit(0);
         }
     }
     public void closeConnection(){
