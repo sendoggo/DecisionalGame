@@ -14,8 +14,8 @@ public class DBConnection {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
-            //con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
-            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql1702439","root","");
+            con = DriverManager.getConnection("jdbc:mysql://lochnagar.abertay.ac.uk:3306/sql1702439","sql1702439","n8HXtGlbgGVg");
+            //con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql1702439","root","");
         } catch (Exception ex) {
             System.out.println("Error: " + ex);
         }

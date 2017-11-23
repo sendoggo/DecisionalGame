@@ -1,15 +1,9 @@
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.awt.CardLayout;
-import java.awt.List;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.SimpleAttributeSet;
@@ -25,26 +19,27 @@ import javax.swing.text.StyleConstants;
  *
  * @author Francesco
  */
-public class Main extends javax.swing.JFrame {
+public class UI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Login4
-     */
-    private int popPoints;
-    private int earnPoints;
-    private int currentQuestionIndex;
-    private ArrayList<QuestionStruct> questionList = null;
-    DBConnection db = new DBConnection();
-    DefaultTableModel model;
-    boolean loggedIn = false;
     
-    public Main() {
+    private int currentQuestionIndex; // index for the question displayed
+    
+    private ArrayList<QuestionStruct> questionList = null; // dynamic array for hold all the questions
+    
+    DBConnection db = new DBConnection(); // connection class obj
+    
+    DefaultTableModel model; // obj for loading data in the table
+    
+    boolean loggedIn = false; // control for the user logged in or not
+    
+    public UI() {
         initComponents();
         
+        // set the initial score to 50
         popPB.setValue(50);
         earnPB.setValue(50);
         
-        
+        // align text in the questionTF and answer1 answer2 panels to centre
         SimpleAttributeSet attribs = new SimpleAttributeSet(); 
         StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
         questionTF.setParagraphAttributes(attribs,true);
@@ -191,12 +186,12 @@ public class Main extends javax.swing.JFrame {
 
         questionTF.setEditable(false);
         questionTF.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 questionTFAncestorAdded(evt);
             }
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
             }
         });
         questionTF.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -287,12 +282,12 @@ public class Main extends javax.swing.JFrame {
         mainPanel.add(gamePanel, "gamePanel");
 
         loginPanel.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 loginPanelAncestorAdded(evt);
             }
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
             }
         });
 
@@ -656,32 +651,38 @@ public class Main extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void playBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playBtnActionPerformed
+        // when button is clicked, swtich to the game panel
         CardLayout card = (CardLayout)mainPanel.getLayout();
         card.show(mainPanel, "gamePanel");
+        
+        // load the first question in the game
         questionTF.setText("No.: "+1+". "+questionList.get(0).getQuestion());
         answer1.setText(questionList.get(0).getAnswer1()+"pop:"+questionList.get(0).getAnswer1points()[0]+",earn:"+questionList.get(0).getAnswer1points()[1]);
         answer2.setText(questionList.get(0).getAnswer2()+"pop:"+questionList.get(0).getAnswer2points()[0]+",earn:"+questionList.get(0).getAnswer2points()[1]);
         popPB.setValue(50);
         earnPB.setValue(50);
-        currentQuestionIndex = 0;
+        currentQuestionIndex = 0; // set the questions index to 0
         popLabel.setText(Integer.toString(50));
         earnLabel.setText(Integer.toString(50));
         
     }//GEN-LAST:event_playBtnActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        // when edit button is clicked, switch to login panel
         CardLayout card = (CardLayout)mainPanel.getLayout();
         card.show(mainPanel, "loginPanel");
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void closeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeBtnActionPerformed
+        // when the close button is clicked, close db connection and close the app
         db.closeConnection();
         System.exit(0);
     }//GEN-LAST:event_closeBtnActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        //triggered when login button is clicked
+        
         // DB LOOKUP FOR ADMIN CREDENTIALS
-
         String username = usernameTF.getText();
         String password = String.valueOf(passwordTF.getPassword());
 
@@ -690,24 +691,23 @@ public class Main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please insert your Credentials","Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        
         //else test credentials
-        
         boolean status = db.loginChecker(username, password);
-        
-
-        if(status == false){
+        if(status == false){ // invalid credentials
             JOptionPane.showMessageDialog(null, "Invalid Credentials!","Error", JOptionPane.ERROR_MESSAGE);
         }
-        else{
+        else{ // valid credentials
             JOptionPane.showMessageDialog(null, "Valid Credentials!","Successful", JOptionPane.INFORMATION_MESSAGE);
             CardLayout card = (CardLayout)mainPanel.getLayout();
             card.show(mainPanel, "deletePanel");
-            loggedIn = true;
+            loggedIn = true; 
             
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void addPanelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPanelBtnActionPerformed
+        // when addPanel button is clicked, switch to add panel
         CardLayout card = (CardLayout)mainPanel.getLayout();
         card.show(mainPanel, "addPanel");
     }//GEN-LAST:event_addPanelBtnActionPerformed
@@ -717,20 +717,23 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_deletePanelFocusGained
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
-        
+        // when refresh button is clicked, fetched all the questions from db and display them in the table
         ArrayList<QuestionStruct> list = null;
         try {
+            //questions fetched from db
             list = db.getQuestions();
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         model = (DefaultTableModel) jTable.getModel();
         
-        model.setRowCount(0);
-        Object data[] = new Object[8];
+        model.setRowCount(0); // clear the table 
+        Object data[] = new Object[4]; 
+        //load every object of the list array into an array of objects, then load it onto the table
         for(int i = 0; i < list.size(); i++)
         {
-            data[0] = list.get(i).getId();
+            data[0] = list.get(i).getId(); 
             data[1] = list.get(i).getQuestion();
             data[2] = list.get(i).getAnswer1();
             data[3] = list.get(i).getAnswer2();
@@ -740,18 +743,19 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_refreshBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        // create a new QuestionStruct obj with the info from the addQuestionPanel
         QuestionStruct obj = new QuestionStruct(newQuestionTF.getText(),answer1TF.getText(), answer2TF.getText(),(Integer)answer1Pop.getValue(), (Integer)answer2Pop.getValue(),(Integer) answer1Earn.getValue(), (Integer)answer2Earn.getValue());
         
-        
+        // if the one of the fields is empty, display error
         if(obj.getQuestion().isEmpty() || obj.getAnswer1().isEmpty() || obj.getAnswer2().isEmpty()){
             JOptionPane.showMessageDialog(null, "Please insert Question, Answer 1 & Answer 2","Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+        // ask for confirmation to add the question
         int answer = JOptionPane.showConfirmDialog(null, "Confirm To Add The Question?", "Attention",JOptionPane.YES_NO_OPTION);
         
-        if (answer == JOptionPane.YES_OPTION) {
-            //insert question in database
+        if (answer == JOptionPane.YES_OPTION) { // if yes
+            //insert question in database & clear the input fields
             if(db.insertNewQuestion(obj.getQuestion(), obj.getAnswer1(), obj.getAnswer2(), obj.getAnswer1points()[0], obj.getAnswer2points()[0], obj.getAnswer1points()[1], obj.getAnswer2points()[1])){
                 JOptionPane.showMessageDialog(null, "Data Successfully Uploaded To Database","Successful", JOptionPane.INFORMATION_MESSAGE);
                 newQuestionTF.setText("");
@@ -762,7 +766,7 @@ public class Main extends javax.swing.JFrame {
                 answer1Earn.setValue(0);
                 answer2Earn.setValue(0);
             }
-            else{
+            else{ //  if no, display error message
                 JOptionPane.showMessageDialog(null, "Unable to Upload the Data to Database","Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -770,10 +774,11 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        
+        // when deleteBtn is clicked, delete the selected questions
         ArrayList<Integer> indexes = new ArrayList<>();
         boolean check = false, success = true;
         indexes.clear();
+        // checks the amount of selected items and keeps track of the indexes
         for(int i = 0; i < jTable.getRowCount(); i++){
             //System.out.println(jTable.getValueAt(i, 4));
             if((jTable.getValueAt(i, 4))!= null){
@@ -788,14 +793,16 @@ public class Main extends javax.swing.JFrame {
         {
             int answer = JOptionPane.showConfirmDialog(null, "Confirm To Delete ["+indexes.size()+"] items?", "Attention",JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
-            //delete questions from db
+                //delete questions from db
                 for(int x = 0; x < indexes.size(); x ++){
                     if(!db.deleteQuestion(indexes.get(x))){ success = false; }
                 }
-                if(success){ JOptionPane.showMessageDialog(null, "Data Successfully Deleted To Database","Successful", JOptionPane.INFORMATION_MESSAGE); refreshBtn.doClick();}
+                //check for possible db errors
+                if(success){ JOptionPane.showMessageDialog(null, "Data Successfully Deleted From Database","Successful", JOptionPane.INFORMATION_MESSAGE); refreshBtn.doClick();}
                 else { JOptionPane.showMessageDialog(null, "Operation Not Fully Completed","Error", JOptionPane.ERROR_MESSAGE); }
             }  
         }
+        //no items selected
         else{ JOptionPane.showMessageDialog(null, "No Questions Selected!","Information", JOptionPane.INFORMATION_MESSAGE); }//no element selected
     }//GEN-LAST:event_deleteBtnActionPerformed
 
@@ -812,24 +819,27 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_questionTFComponentShown
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        System.out.println("wassup");
+        
     }//GEN-LAST:event_formWindowOpened
 
     private void answer1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_answer1MouseClicked
+        // when answer1 is clicked, recall points() method for answer 1
         points(0);
     }//GEN-LAST:event_answer1MouseClicked
 
     private void answer2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_answer2MouseClicked
+        // when answer2 is clicked, recall points() method for answer 2
         points(1);
     }//GEN-LAST:event_answer2MouseClicked
 
     private void questionTFAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_questionTFAncestorAdded
-        
+        // gets triggered when the gamePanel is shown, starts a new game 
         try {
             questionList = db.getQuestions();
         } catch (SQLException ex) {
             System.out.println();
         }
+        // sets the question, answer1, answer2 fields and the scoring
         questionTF.setText("No.: "+1+". "+questionList.get(0).getQuestion());
         answer1.setText(questionList.get(0).getAnswer1()+"pop:"+questionList.get(0).getAnswer1points()[0]+",earn:"+questionList.get(0).getAnswer1points()[1]);
         answer2.setText(questionList.get(0).getAnswer2()+"pop:"+questionList.get(0).getAnswer2points()[0]+",earn:"+questionList.get(0).getAnswer2points()[1]);
@@ -840,32 +850,38 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_questionTFAncestorAdded
 
     private void loginPanelAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_loginPanelAncestorAdded
+        // triggered when the loginPanel is shown, allows the user to stay logged in after the first access
         if(loggedIn){
             CardLayout card = (CardLayout)mainPanel.getLayout();
             card.show(mainPanel, "deletePanel");
         }
     }//GEN-LAST:event_loginPanelAncestorAdded
-
+    
+    // game mechanism
     public void points(int id){
+        
         int popPoints = 0;
         int earnPoints = 0;
         
         if(id == 0){ //Answer 1 clicked
             popPoints = (popPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer1points()[0]));
             earnPoints = (earnPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer1points()[1]));
-            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){
+            // checks if the scoring is still within the playable range
+            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){ // scoring is still within the range
                 popPB.setValue(popPoints);
                 earnPB.setValue(earnPoints);
                 popLabel.setText(Integer.toString(popPoints));
                 earnLabel.setText(Integer.toString(earnPoints));
-                if(currentQuestionIndex < questionList.size()){
+                if(currentQuestionIndex < questionList.size()){ // checks if the questions array is not finished
                     currentQuestionIndex++;
                     if(currentQuestionIndex == questionList.size()){ // game won
                         JOptionPane.showMessageDialog(null, "Game Ended: You Won!","SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        // game resets
                         currentQuestionIndex = 0;
-                        playBtn.doClick();
+                        playBtn.doClick(); 
                     }
-                    else{ 
+                    else{ // set next question
                         questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
                         answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
                         answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
@@ -874,14 +890,17 @@ public class Main extends javax.swing.JFrame {
             }
             else{ // game lost
                 JOptionPane.showMessageDialog(null, "Game Ended: You Lose!","GAME OVER", JOptionPane.ERROR_MESSAGE);
-                currentQuestionIndex = 0;
-                playBtn.doClick();
+                
+                // game resets
+                currentQuestionIndex = 0; 
+                playBtn.doClick(); 
             }
         }
         else{ //Answer 2 clicked
             popPoints = (popPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer2points()[0]));
             earnPoints = (earnPB.getValue()+(questionList.get(currentQuestionIndex).getAnswer2points()[1]));
-            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){
+            // checks if the scoring is still within the playable range
+            if(popPoints >= 0 && popPoints <= 100 && earnPoints >= 0 && earnPoints <= 100){ // scoring is still within the range
                 popPB.setValue(popPoints);
                 earnPB.setValue(earnPoints);
                 popLabel.setText(Integer.toString(popPoints));
@@ -890,10 +909,12 @@ public class Main extends javax.swing.JFrame {
                     currentQuestionIndex++;
                     if(currentQuestionIndex == questionList.size()){ // game won
                         JOptionPane.showMessageDialog(null, "Game Ended: You Won!","SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        // game resets
                         currentQuestionIndex = 0;
-                        playBtn.doClick();
+                        playBtn.doClick(); 
                     }
-                    else{ 
+                    else{ // sets following question
                         questionTF.setText("No.: "+(currentQuestionIndex+1)+". "+questionList.get(currentQuestionIndex).getQuestion());
                         answer1.setText(questionList.get(currentQuestionIndex).getAnswer1()+"pop:"+questionList.get(currentQuestionIndex).getAnswer1points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer1points()[1]);
                         answer2.setText(questionList.get(currentQuestionIndex).getAnswer2()+"pop:"+questionList.get(currentQuestionIndex).getAnswer2points()[0]+",earn:"+questionList.get(currentQuestionIndex).getAnswer2points()[1]);
@@ -902,6 +923,8 @@ public class Main extends javax.swing.JFrame {
             }
             else{ // game lost
                 JOptionPane.showMessageDialog(null, "Game Ended: You Lose!","GAME OVER", JOptionPane.ERROR_MESSAGE);
+                
+                // game resets
                 currentQuestionIndex = 0;
                 playBtn.doClick();
             }
@@ -916,7 +939,7 @@ public class Main extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main().setVisible(true);
+                new UI().setVisible(true);
             }
         });
         
